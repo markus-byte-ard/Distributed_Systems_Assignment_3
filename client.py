@@ -24,7 +24,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
     client.connect((address, 55555))
     ## client.connect(('127.0.0.1', 55555)) ## for faster debugging
-except TimeoutError:
+except (TimeoutError, ConnectionRefusedError) as error:
     print("Connection failed")
     sys.exit()
 
@@ -40,7 +40,7 @@ def receive():
             else:
                 print(message)
         except:
-            ## Close Connection When Error
+            ## Close Connection When an Error occurs
             print("An error occurred!")
             client.close()
             break

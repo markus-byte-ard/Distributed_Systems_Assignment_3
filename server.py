@@ -10,6 +10,7 @@
 
 import socket
 import threading
+from time import sleep
 
 ## Connection Data
 host = '127.0.0.1'
@@ -21,7 +22,7 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((host, port))
 server.listen()
 
-## Lists For Clients, Nicknames and commands and rooms dictionary with roomnames and clients in them
+## Initialize Lists For Clients, Nicknames and commands and rooms dictionary with roomnames and clients in them
 clients = []
 nicknames = []
 rooms = {}
@@ -77,8 +78,8 @@ def addRooms(roomname):
         while (duplicate == True):
             i = i + 1
 
-            if roomname + " {}".format(i) not in rooms:
-                roomname = roomname + " {}".format(i)
+            if roomname + "_{}".format(i) not in rooms:
+                roomname = roomname + "_{}".format(i)
                 duplicate = False
                 
     ## Create the new room
@@ -89,8 +90,12 @@ def addRooms(roomname):
 ## Joining a new room if it exists
 def joinRooms(roomname, user):
     if roomname in rooms:
+        for i in rooms:
+        ## Searches what room the sender is in
+            if user in rooms[i]["clients"]:
+                rooms[i]["clients"].remove(user)
+                break
         rooms[roomname]["clients"].append(user)
-        rooms["main"]["clients"].remove(user)
     else:
         privateBroadcast("Room not available please create the room using command !addRoom <roomname>".encode(), user)
 ## End of def joinRooms()
@@ -185,7 +190,7 @@ def receive():
         ## Request And Store Nickname
         client.send('NICK'.encode())
         nickname = client.recv(1024).decode()
-        
+
         ## Check if nickname already exists, increase number until is not a duplicate 
         ## this way if there are lets say user, user 1 and user 2, will create user 3
         if nickname in nicknames:
@@ -195,8 +200,8 @@ def receive():
             while (duplicate == True):
                 i = i + 1
 
-                if nickname + " {}".format(i) not in nicknames:
-                    nickname = nickname + " {}".format(i)
+                if nickname + "_{}".format(i) not in nicknames:
+                    nickname = nickname + "_{}".format(i)
                     duplicate = False
 
         nicknames.append(nickname)
@@ -204,6 +209,7 @@ def receive():
         
         ## Add user to main room
         rooms["main"]["clients"].append(nickname)
+        ##sleep(5)
 
         ## Print And Broadcast Nickname
         print("Nickname is {}".format(nickname))

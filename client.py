@@ -13,6 +13,8 @@ import sys
 
 ## Choosing a Nickname
 nickname = input("Choose your nickname: ")
+nickname = nickname.split()
+nickname = "_".join(nickname)
 
 ## Connecting To Server 
 address = input("Input server address: ")
